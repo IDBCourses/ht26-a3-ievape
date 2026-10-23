@@ -21,6 +21,13 @@
  * Tone.js documentation: https://tonejs.github.io/docs/15.1.22/
  */
 
+// Idea for an intrument:
+// a) a key that generates a random melody
+// b) a shape that does three things / three different shapes:
+//  b1) changes adds effect upon hovering
+//  b2) changes synth / octave when click
+//  b3) does something when you move from left to right, maybe makes melody play slower of faster
+
 import { createShape } from "./shape.js";
 
 // ---------- Settings ----------
