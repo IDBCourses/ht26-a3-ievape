@@ -33,11 +33,12 @@ import { createShape } from "./shape.js";
 // ---------- Settings ----------
 // Settings variables should contain all of the "fixed" parts of your programs
 // For example: which notes you can play, how fast things move, the tempo.
-const note = "C4"; // the note played when the pointer goes down
-
+//const note = "C4"; // the note played when the pointer goes down
+const notes = ["A4", "C4", "D4", "Eb4", "E4", "G4"];
 // ---------- State ----------
 // State variables are the parts of your program that change over time.
 // For example: where the pointer is, how fast it's moving, or whether a drone is on.
+// let i = Math.floor(Math.random() * notes.length); // how do I make the blues array have random elements all the time?
 
 // ---------- Sound ----------
 // Make the instruments and plug them into the speakers.
@@ -48,6 +49,7 @@ const synth = new Tone.PolySynth(Tone.Synth).toDestination(); // can play severa
 function update() {
   setTimeout(update, 100); // call update() again in 100 milliseconds
 }
+ // need to update clientX
 
 // ---------- Use ----------
 // Use the state to make sound and move shapes. This is called every 100ms.
@@ -57,12 +59,18 @@ function use() {
 
 // ---------- Controls (Event Handlers) ----------
 // Runs every time the pointer goes down: a click, a tap or a pen touch.
-function pointerDown(event) {
+function pointerDown(event){
   Tone.start(); // browsers only allow sound after the player has pressed something
 
-  console.log("Pointer down at", event.clientX, event.clientY);
-  synth.triggerAttackRelease(note, "8n"); // play the note for an eighth note
-}
+  //console.log("Notes playing: ", melody);
+  function playNote(note) {
+  console.log("Now playing " + notes);
+  synth.triggerAttackRelease(notes, "8n", Tone.now())
+  }
+  playNote(notes);; // atm this plays all the notes in the notes array at the same time when I click on blue rectangle
+ }
+
+
 
 // ---------- Setup ----------
 // Setup is run once, at the start of the program. It sets everything up for us!
@@ -73,9 +81,19 @@ function setup() {
   // Example: a shape near the middle of the window. Replace it with your own.
   const example = createShape("example");
   example.setPosition(0.5, 0.5);
+  const shapeOnOff = createShape("shapeOnOff");
+  shapeOnOff.setPosition(0.2, 0.5); // why only two shapes appear? need to normalise?
+  const shapeTempo = createShape("shapeTempo");
+  shapeTempo.setPosition(0.8, 0.5);
+  const shapeVolume = createShape("shapeVolume");
+  shapeVolume.setPosition(0.5, 0.8);
+  shapeVolume.setColour(207, 75, 51);
+  shapeVolume.setSize(150);
+  shapeVolume.setRoundedness(0);
+
 
   // Put your event listener code here
-  window.addEventListener("pointerdown", pointerDown);
+  shapeVolume.element.addEventListener("pointerdown", pointerDown); // why doesn't work when I change "window" into "shape", maybe shape.element
 }
 
 setup(); // Always remember to call setup()!
