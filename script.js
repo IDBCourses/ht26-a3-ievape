@@ -34,16 +34,48 @@ import { createShape } from "./shape.js";
 // Settings variables should contain all of the "fixed" parts of your programs
 // For example: which notes you can play, how fast things move, the tempo.
 //const note = "C4"; // the note played when the pointer goes down
-const notes = ["A4", "C4", "D4", "Eb4", "E4", "G4"];
+const notes = ["C4", "C#4", "D4", "D#4", "E4", "F4", "F#4", "G4", "G#4", "A4", "A#4", "B4"];
+const keys = {}; // will hold each shape, looked up by its note name
+const keyboard = {
+  a: "C4", w: "C#4", s: "D4", e: "D#4", d: "E4", f: "F4",
+  r: "F#4", g: "G4", t: "G#4", h: "A4", y: "A#4", j: "B4",
+};
+const wobbleShape = createShape("vibratoShape");
+wobbleShape.setPosition(0, 0.5);
+
+for (let i = 0; i < notes.length; i++) {
+  const note = notes[i];
+  const isBlack = note.includes("#");
+
+  let x = i * 0.05;
+  if (i >= 5) {
+    x = x + 0.05; // the gap between E and F
+  }
+
+  const key = createShape("note" + (i + 1));
+  key.setSize(50);
+  key.setRoundedness(0);
+
+  if (isBlack) {
+    key.setPosition(x, 0);
+    key.setColour(0, 0, 0);
+  } else {
+    key.setPosition(x, 0.1);
+    key.setColour(300, 90, 90);
+  }
+
+  keys[note] = key;
+}
+
 // ---------- State ----------
 // State variables are the parts of your program that change over time.
 // For example: where the pointer is, how fast it's moving, or whether a drone is on.
-// let i = Math.floor(Math.random() * notes.length); // how do I make the blues array have random elements all the time?
 
 // ---------- Sound ----------
 // Make the instruments and plug them into the speakers.
 const synth = new Tone.PolySynth(Tone.Synth).toDestination(); // can play several notes at once
-
+let vibrato = new Tone.Vibrato(5, 0); // speed and depth
+synth.chain(vibrato, Tone.Destination);
 // ---------- Update ----------
 // Update the state. This is called every 100ms.
 function update() {
@@ -58,18 +90,50 @@ function use() {
 }
 
 // ---------- Controls (Event Handlers) ----------
-// Runs every time the pointer goes down: a click, a tap or a pen touch.
-function pointerDown(event){
+function keyDown(event) {
   Tone.start(); // browsers only allow sound after the player has pressed something
 
-  //console.log("Notes playing: ", melody);
-  function playNote(note) {
-  console.log("Now playing " + notes);
-  synth.triggerAttackRelease(notes, "8n", Tone.now())
-  }
-  playNote(notes);; // atm this plays all the notes in the notes array at the same time when I click on blue rectangle
- }
+  if (event.repeat === false) {
+    const note = keyboard[event.key];
 
+    if (note) { // undefined if the key isn't part of the piano
+      console.log("Playing " + note);
+      keys[note].setColour(204, 100, 50);
+      synth.triggerAttack(note);
+    }
+  }
+}
+
+function keyUp(event) {
+  const note = keyboard[event.key];
+
+  if (note) {
+    if (note.includes("#")) {
+      keys[note].setColour(0, 0, 0);    // black key
+    } else {
+      keys[note].setColour(300, 90, 90); // pink key
+    }
+    synth.triggerRelease(note);
+  }
+}
+
+function addVibrato() {
+  vibrato.depth.value = 1;
+}
+
+function removeVibrato() {
+  vibrato.depth.value = 0;
+}
+
+function pointerEnter(event) {
+  addVibrato();
+  console.log("Sounds wobbly.");
+}
+
+function pointerLeave(event) {
+  removeVibrato();
+  console.log("Back to normal.");
+}
 
 
 // ---------- Setup ----------
@@ -79,21 +143,15 @@ function setup() {
   use(); // start the use loop
 
   // Example: a shape near the middle of the window. Replace it with your own.
-  const example = createShape("example");
-  example.setPosition(0.5, 0.5);
-  const shapeOnOff = createShape("shapeOnOff");
-  shapeOnOff.setPosition(0.2, 0.5); // why only two shapes appear? need to normalise?
-  const shapeTempo = createShape("shapeTempo");
-  shapeTempo.setPosition(0.8, 0.5);
-  const shapeVolume = createShape("shapeVolume");
-  shapeVolume.setPosition(0.5, 0.8);
-  shapeVolume.setColour(207, 75, 51);
-  shapeVolume.setSize(150);
-  shapeVolume.setRoundedness(0);
+
 
 
   // Put your event listener code here
-  shapeVolume.element.addEventListener("pointerdown", pointerDown); // why doesn't work when I change "window" into "shape", maybe shape.element
+  // example.element.addEventListener("pointerdown", pointerDown); // why doesn't work when I change "window" into "shape", maybe shape.element
+  window.addEventListener("keydown", keyDown);
+  window.addEventListener("keyup", keyUp);
+  wobbleShape.element.addEventListener("pointerenter", pointerEnter);
+  wobbleShape.element.addEventListener("pointerleave", pointerLeave);
 }
 
 setup(); // Always remember to call setup()!
