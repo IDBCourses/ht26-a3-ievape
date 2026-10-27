@@ -40,8 +40,9 @@ const keyboard = {
   a: "C4", w: "C#4", s: "D4", e: "D#4", d: "E4", f: "F4",
   r: "F#4", g: "G4", t: "G#4", h: "A4", y: "A#4", j: "B4",
 };
-const wobbleShape = createShape("vibratoShape");
-wobbleShape.setPosition(0, 0.5);
+const wobbleShape = createShape("wobbleShape");
+wobbleShape.setPosition(0.5, 0.5);
+wobbleShape.setSize(250);
 
 for (let i = 0; i < notes.length; i++) {
   const note = notes[i];
@@ -70,18 +71,21 @@ for (let i = 0; i < notes.length; i++) {
 // ---------- State ----------
 // State variables are the parts of your program that change over time.
 // For example: where the pointer is, how fast it's moving, or whether a drone is on.
+let lastX = 0;
+let lastY = 0;
+let lastTime = 0;
+let speeds = [];
 
 // ---------- Sound ----------
 // Make the instruments and plug them into the speakers.
-const synth = new Tone.PolySynth(Tone.Synth).toDestination(); // can play several notes at once
-let vibrato = new Tone.Vibrato(5, 0); // speed and depth
+const synth = new Tone.PolySynth(Tone.Synth); // can play several notes at once, deleted .toDestination so it doesn't interfere with vibrato effect
+let vibrato = new Tone.Vibrato(2, 0.5); // speed and depth, speed from 1 to 9
 synth.chain(vibrato, Tone.Destination);
 // ---------- Update ----------
 // Update the state. This is called every 100ms.
 function update() {
   setTimeout(update, 100); // call update() again in 100 milliseconds
 }
- // need to update clientX
 
 // ---------- Use ----------
 // Use the state to make sound and move shapes. This is called every 100ms.
@@ -118,7 +122,7 @@ function keyUp(event) {
 }
 
 function addVibrato() {
-  vibrato.depth.value = 1;
+  vibrato.depth.value = 0.3;
 }
 
 function removeVibrato() {
@@ -130,6 +134,49 @@ function pointerEnter(event) {
   console.log("Sounds wobbly.");
 }
 
+function pointerMove(event) {
+// need to sync movement speed with wobble speed
+  let normX = event.clientX / window.innerWidth;
+  let normY = event.clientY / window.innerHeight;
+  let now = Date.now();
+  let distance = Math.hypot(normX - lastX, normY - lastY);
+  let seconds = (now - lastTime) / 1000;
+  lastX = normX;
+  lastY = normY;
+  lastTime = Date.now();
+  if (seconds === 0) {
+  return;
+}
+  let speed = distance / seconds;
+
+  speeds.push(speed);
+  setTimeout(forgetOldest, 500);
+  useAverage();
+}
+
+function forgetOldest() {
+  speeds.shift();
+  useAverage();
+}
+
+function useAverage() {
+  let total = 0;
+  for (let i = 0; i < speeds.length; i++) {
+    total = total + speeds[i];
+  }
+  let average = 0;
+  if (speeds.length > 0) {
+    average = total / speeds.length;
+  }
+   speedVibrato(average);
+  }
+  function speedVibrato(average){
+  let wobble = 1 + average * 9; // 1 is very slow wobble, 9 is fast wobble
+    if (wobble > 10) { // sets a ceiling for wobble speed, so it still sounds musical
+      wobble = 10;
+    }
+    vibrato.frequency.value = wobble;
+}
 function pointerLeave(event) {
   removeVibrato();
   console.log("Back to normal.");
@@ -152,6 +199,7 @@ function setup() {
   window.addEventListener("keyup", keyUp);
   wobbleShape.element.addEventListener("pointerenter", pointerEnter);
   wobbleShape.element.addEventListener("pointerleave", pointerLeave);
+  wobbleShape.element.addEventListener("pointermove", pointerMove);
 }
 
 setup(); // Always remember to call setup()!
