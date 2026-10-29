@@ -44,6 +44,14 @@ const wobbleShape = createShape("wobbleShape");
 wobbleShape.setPosition(0.5, 0.5);
 wobbleShape.setSize(250);
 
+const distortionShape = createShape("distortionShape");
+distortionShape.setPosition(0, 0.6);
+distortionShape.setSize(250);
+distortionShape.setRoundedness(0);
+distortionShape.setColour(204, 100, 50);
+distortionShape.element.style.width = "500px";
+distortionShape.element.style.height = "100px";
+
 for (let i = 0; i < notes.length; i++) {
   const note = notes[i];
   const isBlack = note.includes("#");
@@ -80,7 +88,11 @@ let speeds = [];
 // Make the instruments and plug them into the speakers.
 const synth = new Tone.PolySynth(Tone.Synth); // can play several notes at once, deleted .toDestination so it doesn't interfere with vibrato effect
 let vibrato = new Tone.Vibrato(2, 0.5); // speed and depth, speed from 1 to 9
-synth.chain(vibrato, Tone.Destination);
+
+let distortion = new Tone.Distortion(0.4);
+distortion.wet.value = 0; // set to zero until pointer enters shape
+synth.chain(vibrato, distortion, Tone.Destination);
+
 // ---------- Update ----------
 // Update the state. This is called every 100ms.
 function update() {
@@ -121,21 +133,12 @@ function keyUp(event) {
   }
 }
 
-function addVibrato() {
+function wobbleEnter(event) {
   vibrato.depth.value = 0.3;
-}
-
-function removeVibrato() {
-  vibrato.depth.value = 0;
-}
-
-function pointerEnter(event) {
-  addVibrato();
   console.log("Sounds wobbly.");
 }
 
-function pointerMove(event) {
-// need to sync movement speed with wobble speed
+function wobbleMove(event) {
   let normX = event.clientX / window.innerWidth;
   let normY = event.clientY / window.innerHeight;
   let now = Date.now();
@@ -177,12 +180,27 @@ function useAverage() {
     }
     vibrato.frequency.value = wobble;
 }
-function pointerLeave(event) {
-  removeVibrato();
+function wobbleLeave(event) {
+  vibrato.depth.value = 0;
   console.log("Back to normal.");
 }
 
+function buzzEnter(event){
+  distortion.wet.value = 1;
+  console.log("Distortion added.");
+}
 
+function buzzMove(event) {
+  const box = distortionShape.element.getBoundingClientRect();
+  let amount = (event.clientX - box.left) / box.width; // 0 at the shape's left edge, 1 at its right edge
+  console.log(amount);
+  distortion.distortion = amount;
+}
+
+function buzzLeave(event){
+  distortion.wet.value = 0;
+  console.log("No more distortion.");
+}
 // ---------- Setup ----------
 // Setup is run once, at the start of the program. It sets everything up for us!
 function setup() {
@@ -197,9 +215,13 @@ function setup() {
   // example.element.addEventListener("pointerdown", pointerDown); // why doesn't work when I change "window" into "shape", maybe shape.element
   window.addEventListener("keydown", keyDown);
   window.addEventListener("keyup", keyUp);
-  wobbleShape.element.addEventListener("pointerenter", pointerEnter);
-  wobbleShape.element.addEventListener("pointerleave", pointerLeave);
-  wobbleShape.element.addEventListener("pointermove", pointerMove);
+  wobbleShape.element.addEventListener("pointerenter", wobbleEnter);
+  wobbleShape.element.addEventListener("pointerleave", wobbleLeave);
+  wobbleShape.element.addEventListener("pointermove", wobbleMove);
+  distortionShape.element.addEventListener("pointerenter", buzzEnter);
+  distortionShape.element.addEventListener("pointermove", buzzMove);
+  distortionShape.element.addEventListener("pointerleave", buzzLeave);
 }
 
 setup(); // Always remember to call setup()!
+
