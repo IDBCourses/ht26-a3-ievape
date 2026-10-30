@@ -4,18 +4,41 @@
 
 **Name:** Ieva Petravice as8164
 
-<!-- One or two sentences: what kind of instrument is it, and what is it like to play? -->
+The instrument is basically your average keys; you can apply vibrato effect and frequency filters to the sound by doing things on the trackpad.
 
 ## How to play
 
-<!-- Fill in the table with a row for everything the player can do with the pointer: clicking, moving slowly or fast, moving in circles, holding still... Say what happens to the sound and to the shapes. If you added keys, give them rows too. -->
-
 | When you...  | The sound...                         | The shapes... |
 | ------------ | ------------------------------------ | ------------- |
-| Click or tap | Plays a C4 (the example: replace it) | Nothing yet   |
-|              |                                      |               |
+|press 'a' key | Plays a C4                           | Change colour |
+|press 'w' key | Plays a C#4                          | Change colour |
+|press 's' key | Plays a D4                           | Change colour |
+|press 'e' key | Plays a D#4                          | Change colour |
+|press 'd' key | Plays a E4                           | Change colour |
+|press 'f' key | Plays a F4                           | Change colour |
+|press 'r' key | Plays a F#4                          | Change colour |
+|press 'g' key | Plays a G4                           | Change colour |
+|press 't' key | Plays a G#4                          | Change colour |
+|press 'h' key | Plays a A4                           | Change colour |
+|press 'y' key | Plays a A#4                          | Change colour |
+|press 'j' key | Plays a B4                           | Change colour |
+|pointer enters| Frequency filter and vibrato turn on |Pulse and chang|
+|big shape     |                                      |e colour.      |
+|move pointer t| Sound becomes more muffled           |Pulse and chang|
+|to the left   |                                      |e colour.      |
+|move pointer t| Sound becomes more clear             |Pulse and chang|
+|to the right  |                                      |e colour.      |
+|move pointer t| Sound goes cack to normal            |Pulse and chang|
+|to the center |                                      |e colour.      |
+|move pointer  | Sound becomes more wobbly            |Pulse and chang|
+|faster.       |                                      |e colour.      |
+|move pointer  | Sound becomes less wobbly            |Pulse and chang|
+|slower        |                                      |e colour.      |
+|move pointer o| Effects and filters turn off         |Goes back to no|
+|utside the sha|                                      |rmal.          |
+|pe.           |                                      |               |
 
-<!-- Anything else a player needs to know: how to get started, a good thing to try first. -->
+A good thing to try first is to try playing the keyboard without the effects first. When you hover the pointer over the shape when nothing's playing, there won't be any sound.
 
 ---
 
