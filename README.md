@@ -24,11 +24,11 @@ The instrument is basically your average keys; you can apply vibrato effect and 
 |press 'j' key | Plays a B4                           | Change colour |
 |pointer enters| Frequency filter and vibrato turn on |Pulse and chang|
 |big shape     |                                      |e colour.      |
-|move pointer t| Sound becomes more muffled           |Pulse and chang|
+|move pointer  | Sound becomes more muffled           |Pulse and chang|
 |to the left   |                                      |e colour.      |
-|move pointer t| Sound becomes more clear             |Pulse and chang|
+|move pointer  | Sound becomes more clear             |Pulse and chang|
 |to the right  |                                      |e colour.      |
-|move pointer t| Sound goes cack to normal            |Pulse and chang|
+|move pointer  | Sound goes cack to normal            |Pulse and chang|
 |to the center |                                      |e colour.      |
 |move pointer  | Sound becomes more wobbly            |Pulse and chang|
 |faster.       |                                      |e colour.      |
