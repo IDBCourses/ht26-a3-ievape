@@ -67,14 +67,14 @@ let inside = false; // checks if the pointer is inside the shape to know when to
 let pulseTime = 0; // countes up while the shape is pulsing; Math.sin turns it into a swooth swing;
 
 // ---------- Sound ----------
-const synth = new Tone.PolySynth(Tone.Synth); // can play several notes at once, deleted .toDestination so it doesn't interfere with vibrato effect
-let vibrato = new Tone.Vibrato(2, 0); // speed (wobbles per second) and depth, speed (0 = off, 1 = max)
-synth.chain(vibrato, Tone.Destination);
+const synth = new Tone.PolySynth(Tone.Synth); // can play several notes at once; connected to the speakers through the chain below
+let vibrato = new Tone.Vibrato(2, 0); // speed (wobbles per second) and depth, depth (0 = off, 1 = max)
+
 
 let lowpass = new Tone.Filter(20000, "lowpass"); // cuts above 20000 Hz = nothing yet
-let hightpass = new Tone.Filter(20, "highpass"); // cuts below 20 Hz = nothing yet
+let highpass = new Tone.Filter(20, "highpass"); // cuts below 20 Hz = nothing yet
 // the sound goes through both effects in order: first it is wobbled, then filtered, then it reaches speakers.
-synth.chain(vibrato, lowpass, hightpass, Tone.Destination);
+synth.chain(vibrato, lowpass, highpass, Tone.Destination);
 
 // ---------- Update ----------
 function update() {
@@ -211,16 +211,18 @@ function filterMove(event) {
     const t = amount / 0.5;
 
   lowpass.frequency.value = 200 * Math.pow(100, t);
-  hightpass.frequency.value = 20; // high-pass open, cuts nothing
+  highpass.frequency.value = 20; // high-pass open, cuts nothing
   } else {
     const t = (amount - 0.5) / 0.5; //turns the right half from 0.5-1 to 0-1
-    hightpass.frequency.value = 20 * Math.pow(100, t);
+    highpass.frequency.value = 20 * Math.pow(100, t);
     lowpass.frequency.value = 20000; // low-pass open, cuts nothing
   }
+  console.log("Low-pass: " + Math.round(lowpass.frequency.value) + " Hz", "high-pass: " + Math.round(highpass.frequency.value) + " Hz");
+
 }
 
 function filterLeave(event){
-  hightpass.frequency.value = 20000;
+  highpass.frequency.value = 20000;
   lowpass.frequency.value = 20;
   console.log("Filter is off.");
 }
