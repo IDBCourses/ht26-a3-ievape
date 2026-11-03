@@ -222,8 +222,8 @@ function filterMove(event) {
 }
 
 function filterLeave(event){
-  highpass.frequency.value = 20000;
-  lowpass.frequency.value = 20;
+  highpass.frequency.value = 20;
+  lowpass.frequency.value = 20000;
   console.log("Filter is off.");
 }
 // ---------- Setup ----------
